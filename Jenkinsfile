@@ -11,7 +11,7 @@ pipeline {
     stages {
         stage('Checkout Code') {
             steps {
-                git branch: 'master', url: 'https://github.com/somay007/newpythonapp.git'
+                git branch: 'master', url: 'https://github.com/somay007/python_pip.git'
             }
         }
 
