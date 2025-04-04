@@ -15,36 +15,18 @@ pipeline {
             }
         }
 
-        stage('Install Python if not present') {
+        stage('Install Python') {
             steps {
-                script {
-                    def pythonExists = bat(script: 'where python', returnStatus: true) == 0
-                    if (!pythonExists) {
-                        echo 'Python not found, installing...'
-                        bat "curl -o python-installer.exe %PYTHON_INSTALLER_URL%"
-                        bat "start /wait python-installer.exe /quiet InstallAllUsers=1 PrependPath=1 TargetDir=%PYTHON_INSTALL_PATH%"
-                        bat "setx PATH \"%PYTHON_INSTALL_PATH%;%PYTHON_INSTALL_PATH%\\Scripts;%PATH%\""
-                        bat "del python-installer.exe"
-                    } else {
-                        echo 'Python is already installed.'
-                    }
-                }
+                bat 'choco install python --version=3.10 -y'
+                bat 'set PATH=%PATH%;C:\\Python310\\Scripts;C:\\Python310\\'
             }
         }
 
-        stage('Setup Python Environment') {
+        stage('Build and Package') {
             steps {
-                bat "%PYTHON_INSTALL_PATH%\\python --version"
-                bat "%PYTHON_INSTALL_PATH%\\python -m venv venv"
-                bat "call venv\\Scripts\\activate"
-                bat "pip install --upgrade pip"
-                bat "pip install -r requirements.txt"
-            }
-        }
-
-        stage('Package Application') {
-            steps {
-                bat "powershell Compress-Archive -Path .\* -DestinationPath .\app.zip -Force"
+                bat 'pip install -r requirements.txt'
+                bat 'python setup.py build'
+                bat 'python setup.py bdist_wheel'
             }
         }
 
@@ -52,6 +34,7 @@ pipeline {
             steps {
                 withCredentials([azureServicePrincipal(credentialsId: AZURE_CREDENTIALS_ID)]) {
                     bat "az login --service-principal -u %AZURE_CLIENT_ID% -p %AZURE_CLIENT_SECRET% --tenant %AZURE_TENANT_ID%"
+                     bat 'powershell Compress-Archive -Path dist/* -DestinationPath publish.zip -Force'
                     bat "az webapp deploy --resource-group %RESOURCE_GROUP% --name %APP_SERVICE_NAME% --src-path .\app.zip --type zip"
                 }
             }
