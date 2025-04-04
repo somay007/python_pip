@@ -4,14 +4,14 @@ pipeline {
     environment {
         AZURE_CREDENTIALS_ID = 'azure-service-principal'
         RESOURCE_GROUP = 'rg-jenkins'
-        APP_SERVICE_NAME = 'MyWebApplication03'
+        APP_SERVICE_NAME = 'webapijenkins10101010'
         PYTHON_PATH = '"C:\Users\hp\AppData\Local\Programs\Python\Python313\python.exe"'
     }
 
     stages {
         stage('Checkout Code') {
             steps {
-                git branch: 'main', url: 'https://github.com/sakshimathur03/PythonJenkins.git'
+                git branch: 'master', url: 'https://github.com/somay007/python_pip.git'
             }
         }
 
