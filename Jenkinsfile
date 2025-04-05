@@ -4,7 +4,8 @@ pipeline {
     environment {
         AZURE_CREDENTIALS_ID = 'azure-service-principal'
         RESOURCE_GROUP = 'rg-jenkins'
-        APP_SERVICE_NAME = 'linuxapptanishq'
+        APP_SERVICE_NAME = 'webapijenkins10101010'
+        PYTHON_PATH = '"C:\\Users\\hp\\AppData\\Local\\Programs\\Python\\Python313\\python.exe"'
     }
 
     stages {
@@ -16,7 +17,7 @@ pipeline {
 
         stage('Set Up Python Environment') {
             steps {
-                bat 'python -m venv venv'
+                bat '"%PYTHON_PATH%" -m venv venv'
                 bat 'call venv\\Scripts\\activate && python -m pip install --upgrade pip'
                 bat 'call venv\\Scripts\\activate && pip install -r requirements.txt'
                 bat 'call venv\\Scripts\\activate && pip install pytest'
